@@ -54,61 +54,35 @@ func readAbi(verbose bool) *client.Events {
 	path, _ := filepath.Abs("./solidity/build/contracts_Bridge_sol_Bridge.abi")
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Println("Failed to read file:", err)
+		logger.Warn("Failed to read file: %s: will try to read solidity/build/Bridge.abi", err)
+	}
+
+	path, _ = filepath.Abs("./solidity/build/Bridge.abi")
+	file, err = ioutil.ReadFile(path)
+	if err != nil {
+		logger.FatalError("Failed to read file: %s", err)
 	}
 
 	bridgeabi, err := abi.JSON(strings.NewReader(string(file)))
 	if err != nil {
-		fmt.Println("Invalid abi:", err)
+		logger.FatalError("Invalid abi: %s", err)
 	}
 
 	// checking abi for events
 	bridgeEvents := bridgeabi.Events
-	depositEvent := bridgeEvents["Deposit"]
-	depositHash := depositEvent.Id()
-	e.DepositId = depositHash.Hex()
-	if verbose {
-		fmt.Println("deposit event id: ", e.DepositId)
-	}
 
-	creationEvent := bridgeEvents["ContractCreation"]
-	creationHash := creationEvent.Id()
-	e.CreationId = creationHash.Hex()
-	if verbose {
-		fmt.Println("contract creation event id: ", e.CreationId)
-	}
-
-	withdrawEvent := bridgeEvents["Withdraw"]
-	withdrawHash := withdrawEvent.Id()
-	e.WithdrawId = withdrawHash.Hex()
-	if verbose {
-		fmt.Println("withdraw event id: ", e.WithdrawId)
-	}
-
-	bridgeFundedEvent := bridgeEvents["BridgeFunded"]
-	bridgeFundedHash := bridgeFundedEvent.Id()
-	e.BridgeFundedId = bridgeFundedHash.Hex()
-	if verbose {
-		fmt.Println("bridge funded event id: ", e.BridgeFundedId)
-	}
-
-	paidEvent := bridgeEvents["Paid"]
-	paidHash := paidEvent.Id()
-	e.PaidId = paidHash.Hex()
-	if verbose {
-		fmt.Println("bridge paid event id", e.PaidId)
-	}
-
-	// addAuthEvent := bridgeEvents["AuthorityAdded"]
-	// addAuthHash := addAuthEvent.Id()
-	// e.AuthorityAddedId = addAuthHash.Hex()
-	// if verbose {
-	// 	fmt.Println("added authority id: ", e.AuthorityAddedId)
-	// }
+	// save event Ids which will be what we check for in event topics
+	e.DepositId = bridgeEvents["Deposit"].Id().Hex()
+	e.CreationId = bridgeEvents["ContractCreation"].Id().Hex()
+	e.WithdrawId = bridgeEvents["Withdraw"].Id().Hex()
+	e.BridgeFundedId = bridgeEvents["BridgeFunded"].Id().Hex()
+	e.PaidId = bridgeEvents["Paid"].Id().Hex()
+	// e.AuthorityAddedId = bridgeEvents["AuthorityAdded"].Id().Hex()
 
 	return e
 }
 
+// check if file or directory at path exists
 func exists(path string) (bool, error) {
     _, err := os.Stat(path)
     if err == nil { return true, nil }
@@ -116,6 +90,8 @@ func exists(path string) (bool, error) {
     return true, err
 }
 
+// create log/ directory if it does not exist
+// will store the latest block number read 
 func startup(id *big.Int) *big.Int {
 	log_exists, err := exists("log")
 	if err != nil {
@@ -148,7 +124,7 @@ func printHeader() {
 func main() {
 	/* flags */
 	headerPtr := flag.Bool("header", true, "a bool representing whether to print out the header or not")
-	verbosePtr := flag.Bool("v", false, "a bool representing verbosity of output")
+	verbosePtr := flag.Bool("v", false, "increase verbosity of output")
 	readAllPtr := flag.Bool("a", false, "a bool representing whether to read logs from every contract or not")
 	configPtr := flag.String("config", "./config.json", "a string of the path to the config file")
 	keysPtr := flag.String("keystore", "./keystore", "a string of the path to the keystore directory")
