@@ -11,18 +11,23 @@ go 1.9.1
 go-ethereum
 `go get github.com/ethereum/go-ethereum`
 
-leth
-`go get github.com/ChainSafeSystems/leth`
+solc/solcjs
+`npm i -g solc`
 
 # to get the bridge
 `go get github.com/goerli/GoethBridge`
 
+# compile abi
+```
+cd solidity
+mkdir build
+solcjs --abi contracts/Bridge.sol -o build
+```
+
 # to run
 #### generic instructions for bridge, needs to be updated!
 ```
-cd $GOPATH/src/github.com/goerli/GoethBridge
-cd leth && leth compile
-cd ..
+cd $GOPATH/src/github.com/ChainSafeSystems/ChainBridge
 go build && go install
 ```
 
@@ -73,18 +78,4 @@ for all the following, you should have another terminal open running the bridge 
 
 eg. `ChainBridge fund kovan`
 
-# issues
-
-you may encounter a "Failed to read file" error referencing Bridge.abi. If this happens, run the following:
-```
-cd leth
-leth compile
-```
-
-if for some reason leth isn't working, you can also use solc.
-inside ChainBridge/leth:
-```
-mkdir build
-solc --abi contracts/Bridge.sol -o build
-```
 
