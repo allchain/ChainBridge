@@ -3,7 +3,11 @@ package bridgecontract
 import (
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 // deploys a new Ethereum contract, binding an instance of BridgeContract to it.
@@ -18,12 +22,12 @@ func DeployDepositContract(auth *bind.TransactOpts, backend bind.ContractBackend
 		return common.Address{}, nil, nil, err
 	}
 
-	bin, err := ioutil.ReadFile(path)
+	bin, err := ioutil.ReadFile(fp)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
 
-	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(bin), backend)
+	address, tx, contract, err := bind.DeployContract(auth, parsed, bin, backend)
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
