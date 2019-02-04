@@ -1,7 +1,6 @@
 package client 
 
 import (
-	"fmt"
 	"time"
 	"encoding/hex"
 	"math/big"
@@ -12,7 +11,7 @@ import (
 	"os/signal"
 	"syscall"
 	"sync"
-	"strconv"
+	//"strconv"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum"
@@ -55,13 +54,15 @@ type Events struct {
 	DepositId string
   	CreationId string
  	WithdrawId string
-	BridgeSetId string
 	BridgeFundedId string
 	PaidId string
+	AuthorityAddedId string
+	AuthorityRemovedId string
+	ThresholdUpdated string
+	SignedForWithdraw string
 }
 
 /****** helpers ********/
-
 // pads zeroes on front of a string until it's 32 bytes or 64 hex characters long
 func padTo32Bytes(s string) (string) {
 	l := len(s)
@@ -94,7 +95,7 @@ func setWithdrawalData(w *Withdrawal) (*Withdrawal) {
 	if len(valueString) != 64 {
 		logger.Warn("value formatted incorrectly")
 	}
-	w.Data = w.Recipient + valueString + w.FromChain + w.TxHash
+	w.Data = padTo32Bytes(w.Recipient) + valueString + w.FromChain + w.TxHash
 	return w
 }
 
@@ -142,10 +143,13 @@ func ReadLogs(chain *Chain, allChains []*Chain, logs []types.Log, logsDone chan 
 	for _, log := range logs {
 		txHash := log.TxHash.Hex()
 		if(!logsRead[txHash]) {
+			logsRead[txHash] = true
+
 			logger.Event("logs found on %s at block %d", chain.Name, log.BlockNumber)
 			logger.Event("contract address: %s", log.Address.Hex())
-			for _, topics := range log.Topics {
-				topic := topics.Hex()
+
+			for _, _topic := range log.Topics {
+				topic := _topic.Hex()
 				if strings.Compare(topic, events.DepositId) == 0 { 
 					logger.Event("deposit event: tx hash: %s", txHash)
 					withdrawDone := make(chan bool)
@@ -156,18 +160,35 @@ func ReadLogs(chain *Chain, allChains []*Chain, logs []types.Log, logsDone chan 
 				} else if strings.Compare(topic, events.WithdrawId) == 0 {
 					logger.Event("withdraw event: tx hash: %s", txHash)
 					printWithdraw(chain, log.TxHash)
-				} else if strings.Compare(topic, events.BridgeSetId) == 0 {
-					logger.Event("set bridge event: tx hash: %s", txHash)
+				} else if strings.Compare(topic, events.AuthorityAddedId) == 0 {
+					logger.Event("authority added event: tx hash: %s", txHash)
+				} else if strings.Compare(topic, events.AuthorityRemovedId) == 0 {
+					logger.Event("authority removed event: tx hash: %s", txHash)
 				} else if strings.Compare(topic, events.BridgeFundedId) == 0 {
 					logger.Event("funded bridge event: tx hash: %s", txHash)
 				} else if strings.Compare(topic, events.PaidId) == 0 {
 					logger.Event("bridge paid event: tx hash: %s", txHash)
+				} else if strings.Compare(topic, events.ThresholdUpdated) == 0 {
+					logger.Event("threshold updated event: tx hash: %s", txHash)
+					//data := getTxData(chain, log.TxHash)
+					//threshold, _ := strconv.Atoi(data[8:40])
+					//logger.Event("new threshold: %s", data)
+				} else if strings.Compare(topic, events.SignedForWithdraw) == 0 {
+					logger.Event("signed for withdraw event: tx hash: %s", txHash)
+					data := getTxData(chain, log.TxHash)
+					logger.Event("tx hash signed for: %s", data[8:40])
+					//logger.Event("%s", topic)
 				}
 			}
-			logsRead[txHash] = true
 		}
 	}
 	logsDone <- true
+}
+
+func getTxData(chain *Chain, txHash common.Hash) (string) {
+	tx := waitOnPending(chain, txHash)
+	data := hex.EncodeToString(tx.Data())
+	return data
 }
 
 func waitOnPending(chain *Chain, txHash common.Hash) (*types.Transaction) {
@@ -203,10 +224,10 @@ func HandleDeposit(chain *Chain, allChains []*Chain, txHash common.Hash, withdra
 		toChain := data[72:136]
 		value := tx.Value()
 
-		to, _ := strconv.Atoi(toChain)
+		//to, _ := strconv.Atoi(toChain)
 		logger.Event("receiver: 0x%s", receiver) 
 		logger.Event("value: %d", value) // in hexidecimal
-		logger.Event("to chain: %d", to) // in hexidecimal
+		//logger.Event("to chain: %d", to) // in hexidecimal
 
 		withdrawal.Recipient = data[32:72]
 		withdrawal.FromChain = toChain
@@ -215,122 +236,21 @@ func HandleDeposit(chain *Chain, allChains []*Chain, txHash common.Hash, withdra
 
 		fromChain := new(big.Int)
 		fromChain.SetString(toChain, 16)
-		logger.Info("chain to withdraw to: %s", fromChain)
+		logger.Event("chain to withdraw to: %s", fromChain)
 
 		idx := findChainIndex(fromChain, allChains)
 
 		if idx == -1 {
 			logger.Error("could not find chain to withdraw to")
 		} else {
-			Withdraw(allChains[idx], withdrawal)
+			err := Withdraw(allChains[idx], withdrawal)
+			if err != nil {
+				logger.Error("%s", err)
+			}
 		}
 	}
+
 	withdrawDone <- true
-}
-
-func FundPrompt(chain *Chain, ks *keystore.KeyStore) {
-	keys = ks
-
-	var value int64
-	var confirm int64
-	fmt.Println("\nfunding the bridge contract on chain", chain.Id)
-	fmt.Println("note that funding of the bridge cannot be withdrawn")
-	fmt.Println("enter value of funding, in wei")
-	fmt.Scanln(&value)
-	if value == -1 { 
-		return
-	}
-	valBig := big.NewInt(value)
-	fmt.Println("confirm funding on chain", chain.Id, "with value", value, "wei")
-	fmt.Scanln(&confirm)
-	if confirm == -1 { 
-		return
-	}
-	FundBridge(chain, valBig)
-}
-
-func DepositPrompt(chain *Chain, ks *keystore.KeyStore) {
-	keys = ks
-
-	var value int64
-	var to int64
-	var confirm int64
-	fmt.Println("\ndepositing to the bridge contract on chain", chain.Id)
-	fmt.Println("type -1 to escape")
-	fmt.Println("enter value of deposit, in wei")
-	fmt.Scanln(&value)
-	if value == -1 { 
-		return
-	}
-	fmt.Println("enter chain id to withdraw on")
-	fmt.Scanln(&to)
-	if to == -1 { 
-		return
-	}
-
-	valBig := big.NewInt(value)
-
-	toHex := fmt.Sprintf("%x", to)
-	fmt.Println("confirm deposit on chain", chain.Id, "with value", value, "wei, withdrawing to chain", to)
-	fmt.Scanln(&confirm)
-	if confirm == -1 { 
-		return
-	}
-	Deposit(chain, valBig, toHex)
-}
-
-func WithdrawToPrompt(chain *Chain, ks *keystore.KeyStore) {
-	keys = ks
-
-	var value int64
-	var to int64
-	var confirm int64
-	fmt.Println("\nwithdrawing to other chains from the bridge contract on chain", chain.Id)
-	fmt.Println("type -1 to escape")
-	fmt.Println("enter value of withdraw, in wei")
-	fmt.Scanln(&value)
-	if value == -1 { 
-		return
-	}
-	fmt.Println("enter chain id to withdraw on")
-	fmt.Scanln(&to)
-	if to == -1 { 
-		return
-	}
-
-	fmt.Println("confirm deposit on chain", chain.Id, "with value", value, "wei, withdrawing to chain", to)
-	fmt.Scanln(&confirm)
-	if confirm == -1 { 
-		return
-	}
-
-	valBig := big.NewInt(value)
-	toHex := fmt.Sprintf("%x", to)
-	WithdrawTo(chain, valBig, toHex)
-}
-
-func PayBridgePrompt(chain *Chain, ks *keystore.KeyStore) {
-	keys = ks
-
-	var value int64
-	var confirm int64
-	fmt.Println("\npaying bridge contract on chain", chain.Id)
-	fmt.Println("note that bridge payments can later be withdrawn")
-	fmt.Println("type -1 to escape")
-	fmt.Println("enter value of payment, in wei")
-	fmt.Scanln(&value)
-	if value == -1 {
-		return
-	}
-
-	fmt.Println("confirm payment to bridge on chain", chain.Id, "with value", value, "wei")
-	fmt.Scanln(&confirm)
-	if confirm == -1 {
-		return
-	}
-
-	valBig := big.NewInt(value)
-	PayBridge(chain, valBig)
 }
 
 // main goroutine
