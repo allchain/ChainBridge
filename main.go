@@ -43,8 +43,7 @@ type Chain struct {
 
 /****** keystore methods ******/
 func newKeyStore(path string) *keystore.KeyStore {
-	newKeyStore := keystore.NewKeyStore(path, keystore.StandardScryptN, keystore.StandardScryptP)
-	return newKeyStore
+	return keystore.NewKeyStore(path, keystore.StandardScryptN, keystore.StandardScryptP)
 }
 
 func readAbi(verbose bool) *client.Events {
@@ -84,23 +83,27 @@ func readAbi(verbose bool) *client.Events {
 
 // check if file or directory at path exists
 func exists(path string) (bool, error) {
-    _, err := os.Stat(path)
-    if err == nil { return true, nil }
-    if os.IsNotExist(err) { return false, nil }
-    return true, err
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
 }
 
 // create log/ directory if it does not exist
-// will store the latest block number read 
+// will store the latest block number read
 func startup(id *big.Int) *big.Int {
 	log_exists, err := exists("log")
 	if err != nil {
 		logger.Error("%s", err)
 	}
 	if !log_exists {
-		logger.Info("creating log/ directory...")	
+		logger.Info("creating log/ directory...")
 		os.Mkdir("./log", os.ModePerm)
-	} 
+	}
 
 	path, _ := filepath.Abs("./log/" + id.String() + "_lastblock.txt")
 	file, err := ioutil.ReadFile(path)
@@ -386,7 +389,7 @@ func main() {
 			}
 			//client.AddAuthorityPrompt(chain, ks)
 		}
-		return		
+		return
 	}
 
 	/* channels */

@@ -11,7 +11,7 @@ import (
 )
 
 // deploys a new Ethereum contract, binding an instance of BridgeContract to it.
-func DeployDepositContract(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Bridge, error) {
+func DeployBridge(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Bridge, error) {
 	parsed, err := abi.JSON(strings.NewReader(BridgeABI))
 	if err != nil {
 		return common.Address{}, nil, nil, err

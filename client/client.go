@@ -28,40 +28,6 @@ var keys *keystore.KeyStore // keystore; used to sign txs
 var flags map[string]bool // command line flags
 var logsRead = map[string]bool{}
 
-type Chain struct {
-	Name string 						`json:"name"`
-	Url string 							`json:"url"`
-	Id *big.Int 						`json:"id,omitempty"`
-	Contract *common.Address 			`json:"contractAddr"`
-	GasPrice *big.Int 					`json:"gasPrice"`
-	From *common.Address 				`json:"from"`
-	Password string 					`json:"password,omitempty"`
-	Client *ethclient.Client 			`json:"client,omitempty"`
-	Nonce uint64 						`json:"nonce,omitempty"`
-	StartBlock *big.Int 				`json:"startBlock,omitempty"`
-}
-
-type Withdrawal struct {
-	Recipient string
-	Value *big.Int
-	FromChain string
-	TxHash string
-	Data string
-}
-
-// events to listen for
-type Events struct {
-	DepositId string
-  	CreationId string
- 	WithdrawId string
-	BridgeFundedId string
-	PaidId string
-	AuthorityAddedId string
-	AuthorityRemovedId string
-	ThresholdUpdated string
-	SignedForWithdraw string
-}
-
 /****** helpers ********/
 // pads zeroes on front of a string until it's 32 bytes or 64 hex characters long
 func padTo32Bytes(s string) (string) {

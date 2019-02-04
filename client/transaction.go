@@ -28,7 +28,9 @@ func SignMessage(chain *Chain, msg []byte) ([]byte, error) {
 	msg, err := keys.SignHashWithPassphrase(*from, chain.Password, msg)
 	if err != nil {
 		return nil, err
-	} else { return msg, nil }
+	} else { 
+		return msg, nil 
+	}
 }
 
 // send a tx to chain with calldata
