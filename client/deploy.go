@@ -11,7 +11,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/common"
-	//"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -22,8 +22,11 @@ func Deploy(chain Chain, ks *keystore.KeyStore, bin []byte, contract string) (co
 		return *new(common.Address), err
 	}
 
+	from := new(accounts.Account)
+	from.Address = *chain.From
+
 	tx := types.NewContractCreation(nonce, big.NewInt(0), uint64(4600000), chain.GasPrice, bin)
-	fmt.Println(ks.Accounts()[0])
+ 	//tx := types.NewTransaction(nonce, *new(common.Address), big.NewInt(0), uint64(4600000), chain.GasPrice, bin)
 	txSigned, err := ks.SignTxWithPassphrase(ks.Accounts()[0], chain.Password, tx, chain.Id)
 	if err != nil {
 		return *new(common.Address), errors.New(fmt.Sprintf("could not sign tx: %s", err))

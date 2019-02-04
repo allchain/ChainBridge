@@ -12,10 +12,12 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 )
 
+// deploys the bridge contract and setups Chain type with name, url, client, from address, password, 
+// chain ID, gas price and contract address
 func setup() (*Chain, error) {
 	chain := new(Chain)
 	chain.Name = "testnet"
-	chain.Url = "http://localhost:8545"
+	chain.Url = "https://rinkeby.infura.io"
 
 	client, err := ethclient.Dial(chain.Url)
 	if err != nil {
@@ -28,6 +30,7 @@ func setup() (*Chain, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	ks := keystore.NewKeyStore(fp, keystore.StandardScryptN, keystore.StandardScryptP)
 	ksaccounts := ks.Accounts()
 	if len(ksaccounts) == 0 {
@@ -48,8 +51,8 @@ func setup() (*Chain, error) {
 	}
 
 	chain.Password = "password"
-	chain.Id = big.NewInt(1)
-	chain.GasPrice = big.NewInt(100000000)
+	chain.Id = big.NewInt(0)
+	chain.GasPrice = big.NewInt(10000000)
 
 	address, err := Deploy(*chain, ks, bin, "Bridge")
 	if err != nil {
