@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	ethereum "github.com/ethereum/go-ethereum"
+	//ethereum "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind/backends"
@@ -57,22 +57,21 @@ func setup() (*testAccount, error) {
 	return &testAccount{addr, contract, contractAddr, backend, txOpts}, nil
 }
 
-func logs(test *testAccount) ([]types.Log, error) {
-	query := ethereum.FilterQuery{
-		Addresses: []common.Address{
-			test.contractAddr,
-		},
-		FromBlock: big.NewInt(0),
-	}
+// func logs(test *testAccount) ([]types.Log, error) {
+// 	query := ethereum.FilterQuery{
+// 		Addresses: []common.Address{
+// 			test.contractAddr,
+// 		},
+// 		FromBlock: big.NewInt(0),
+// 	}
 
-	logs, err := test.backend.FilterLogs(context.Background(), query)
-	if err != nil {
-		return nil, err
-	}
+// 	logs, err := test.backend.FilterLogs(context.Background(), query)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	fmt.Println(logs)
-	return logs, err
-}
+// 	return logs, err
+// }
 
 // deploys a new Ethereum contract, binding an instance of BridgeContract to it.
 func DeployBridge(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Bridge, error) {
@@ -81,7 +80,7 @@ func DeployBridge(auth *bind.TransactOpts, backend bind.ContractBackend) (common
 		return common.Address{}, nil, nil, err
 	}
 
-	fp, err := filepath.Abs("../build/Bridge.bin")
+	fp, err := filepath.Abs("./build/Bridge.bin")
 	if err != nil {
 		return common.Address{}, nil, nil, err
 	}
@@ -112,14 +111,20 @@ func TestDeposit(t *testing.T) {
 	}	
 
 	test.txOpts.Value = big.NewInt(1000000000000000000)
-	_, err = test.contract.Deposit(test.txOpts, test.addr, big.NewInt(1))
+	tx, err := test.contract.Deposit(test.txOpts, test.addr, big.NewInt(1))
 	if err != nil {
 		t.Error("could not deposit into bridge")
 	}
 
-	_, err = logs(test)
+	test.backend.Commit()
+
+	receipt, err := test.backend.TransactionReceipt(context.Background(), tx.Hash())
 	if err != nil {
-		t.Fatalf("Unable to get logs of bridge contract: %v", err)
+		t.Fatalf("Unable to get receipt: %v", err)
+	}
+
+	if receipt.Status == 0 {
+		t.Fatal("Deposit failed")
 	}
 }
 
@@ -130,9 +135,20 @@ func TestFundBridge(t *testing.T) {
 	}	
 
 	test.txOpts.Value = big.NewInt(1000000000000000000)
-	_, err = test.contract.FundBridge(test.txOpts)
+	tx, err := test.contract.FundBridge(test.txOpts)
 	if err != nil {
 		t.Error("could not fund bridge")
+	}
+
+	test.backend.Commit()
+
+	receipt, err := test.backend.TransactionReceipt(context.Background(), tx.Hash())
+	if err != nil {
+		t.Fatalf("Unable to get receipt: %v", err)
+	}
+
+	if receipt.Status == 0 {
+		t.Fatal("No fund bridge logs")
 	}
 }
 
@@ -144,9 +160,20 @@ func TestWithdrawToFailing(t *testing.T) {
 	}	
 
 	test.txOpts.Value = big.NewInt(1000000000000000000)
-	_, err = test.contract.WithdrawTo(test.txOpts, test.addr, big.NewInt(1), big.NewInt(2000000000000000000))
-	if err == nil {
-		t.Error("could withdraw more than balance")
+	tx, err := test.contract.WithdrawTo(test.txOpts, test.addr, big.NewInt(1), big.NewInt(2000000000000000000))
+	if err != nil {
+		t.Error("could not send tx")
+	}
+
+	test.backend.Commit()
+
+	receipt, err := test.backend.TransactionReceipt(context.Background(), tx.Hash())
+	if err != nil {
+		t.Fatalf("Unable to get receipt: %v", err)
+	}
+
+	if receipt.Status == 1 {
+		t.Fatal("Could withdraw")
 	}
 }
 
@@ -165,9 +192,20 @@ func TestWithdrawWrongAddress(t *testing.T) {
 
 	txHash := [32]byte{}
 	copy(txHash[:], txHashBytes)
-	_, err = test.contract.Withdraw(test.txOpts, common.HexToAddress("0x01"), big.NewInt(10), big.NewInt(1), txHash)
-	if err == nil {
-		t.Error("could withdraw from non authority account")
+	tx, err := test.contract.Withdraw(test.txOpts, common.HexToAddress("0x01"), big.NewInt(10), big.NewInt(1), txHash)
+	if err != nil {
+		t.Error("could not send tx")
+	}
+
+	test.backend.Commit()
+
+	receipt, err := test.backend.TransactionReceipt(context.Background(), tx.Hash())
+	if err != nil {
+		t.Fatalf("Unable to get receipt: %v", err)
+	}
+
+	if receipt.Status == 1 {
+		t.Fatal("Could withdraw")
 	}
 }
 
@@ -185,8 +223,19 @@ func TestWithdraw(t *testing.T) {
 
 	txHash := [32]byte{}
 	copy(txHash[:], txHashBytes)
-	_, err = test.contract.Withdraw(test.txOpts, test.addr, big.NewInt(10), big.NewInt(1), txHash)
+	tx, err := test.contract.Withdraw(test.txOpts, test.addr, big.NewInt(10), big.NewInt(1), txHash)
 	if err != nil {
-		t.Error("could not withdraw")
+		t.Error("could not send tx")
+	}
+
+	test.backend.Commit()
+
+	receipt, err := test.backend.TransactionReceipt(context.Background(), tx.Hash())
+	if err != nil {
+		t.Fatalf("Unable to get receipt: %v", err)
+	}
+
+	if receipt.Status == 0 {
+		t.Fatal("No withdraw logs")
 	}
 }
