@@ -56,12 +56,11 @@ func readAbi(verbose bool) *client.Events {
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
 		logger.Warn("Failed to read file: %s: will try to read solidity/build/Bridge.abi", err)
-	}
-
-	path, _ = filepath.Abs("./solidity/build/Bridge.abi")
-	file, err = ioutil.ReadFile(path)
-	if err != nil {
-		logger.FatalError("Failed to read file: %s", err)
+		path, _ = filepath.Abs("./solidity/build/Bridge.abi")
+		file, err = ioutil.ReadFile(path)
+		if err != nil {
+			logger.FatalError("Failed to read file: %s", err)
+		}
 	}
 
 	bridgeabi, err := abi.JSON(strings.NewReader(string(file)))
