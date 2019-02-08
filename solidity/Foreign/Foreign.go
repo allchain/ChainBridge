@@ -1,7 +1,7 @@
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 
-package foreigncontract
+package foreign
 
 import (
 	"math/big"
@@ -174,21 +174,21 @@ func (_Foreign *ForeignTransactorRaw) Transact(opts *bind.TransactOpts, method s
 
 // Deposit is a paid mutator transaction binding the contract method 0x47e7ef24.
 //
-// Solidity: function deposit(_recipient address, _toChain uint256) returns()
+// Solidity: function deposit(address _recipient, uint256 _toChain) returns()
 func (_Foreign *ForeignTransactor) Deposit(opts *bind.TransactOpts, _recipient common.Address, _toChain *big.Int) (*types.Transaction, error) {
 	return _Foreign.contract.Transact(opts, "deposit", _recipient, _toChain)
 }
 
 // Deposit is a paid mutator transaction binding the contract method 0x47e7ef24.
 //
-// Solidity: function deposit(_recipient address, _toChain uint256) returns()
+// Solidity: function deposit(address _recipient, uint256 _toChain) returns()
 func (_Foreign *ForeignSession) Deposit(_recipient common.Address, _toChain *big.Int) (*types.Transaction, error) {
 	return _Foreign.Contract.Deposit(&_Foreign.TransactOpts, _recipient, _toChain)
 }
 
 // Deposit is a paid mutator transaction binding the contract method 0x47e7ef24.
 //
-// Solidity: function deposit(_recipient address, _toChain uint256) returns()
+// Solidity: function deposit(address _recipient, uint256 _toChain) returns()
 func (_Foreign *ForeignTransactorSession) Deposit(_recipient common.Address, _toChain *big.Int) (*types.Transaction, error) {
 	return _Foreign.Contract.Deposit(&_Foreign.TransactOpts, _recipient, _toChain)
 }
@@ -268,7 +268,7 @@ type ForeignContractCreation struct {
 
 // FilterContractCreation is a free log retrieval operation binding the contract event 0x4db17dd5e4732fb6da34a148104a592783ca119a1e7bb8829eba6cbadef0b511.
 //
-// Solidity: e ContractCreation(_owner address)
+// Solidity: event ContractCreation(address _owner)
 func (_Foreign *ForeignFilterer) FilterContractCreation(opts *bind.FilterOpts) (*ForeignContractCreationIterator, error) {
 
 	logs, sub, err := _Foreign.contract.FilterLogs(opts, "ContractCreation")
@@ -280,7 +280,7 @@ func (_Foreign *ForeignFilterer) FilterContractCreation(opts *bind.FilterOpts) (
 
 // WatchContractCreation is a free log subscription operation binding the contract event 0x4db17dd5e4732fb6da34a148104a592783ca119a1e7bb8829eba6cbadef0b511.
 //
-// Solidity: e ContractCreation(_owner address)
+// Solidity: event ContractCreation(address _owner)
 func (_Foreign *ForeignFilterer) WatchContractCreation(opts *bind.WatchOpts, sink chan<- *ForeignContractCreation) (event.Subscription, error) {
 
 	logs, sub, err := _Foreign.contract.WatchLogs(opts, "ContractCreation")
@@ -392,7 +392,7 @@ type ForeignDeposit struct {
 
 // FilterDeposit is a free log retrieval operation binding the contract event 0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15.
 //
-// Solidity: e Deposit(_recipient address, _value uint256, _toChain uint256)
+// Solidity: event Deposit(address _recipient, uint256 _value, uint256 _toChain)
 func (_Foreign *ForeignFilterer) FilterDeposit(opts *bind.FilterOpts) (*ForeignDepositIterator, error) {
 
 	logs, sub, err := _Foreign.contract.FilterLogs(opts, "Deposit")
@@ -404,7 +404,7 @@ func (_Foreign *ForeignFilterer) FilterDeposit(opts *bind.FilterOpts) (*ForeignD
 
 // WatchDeposit is a free log subscription operation binding the contract event 0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15.
 //
-// Solidity: e Deposit(_recipient address, _value uint256, _toChain uint256)
+// Solidity: event Deposit(address _recipient, uint256 _value, uint256 _toChain)
 func (_Foreign *ForeignFilterer) WatchDeposit(opts *bind.WatchOpts, sink chan<- *ForeignDeposit) (event.Subscription, error) {
 
 	logs, sub, err := _Foreign.contract.WatchLogs(opts, "Deposit")

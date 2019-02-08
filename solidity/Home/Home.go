@@ -1,7 +1,7 @@
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 
-package homecontract
+package home
 
 import (
 	"math/big"
@@ -226,42 +226,42 @@ func (_Home *HomeCallerSession) Owner() (common.Address, error) {
 
 // SetBridge is a paid mutator transaction binding the contract method 0x8dd14802.
 //
-// Solidity: function setBridge(_addr address) returns()
+// Solidity: function setBridge(address _addr) returns()
 func (_Home *HomeTransactor) SetBridge(opts *bind.TransactOpts, _addr common.Address) (*types.Transaction, error) {
 	return _Home.contract.Transact(opts, "setBridge", _addr)
 }
 
 // SetBridge is a paid mutator transaction binding the contract method 0x8dd14802.
 //
-// Solidity: function setBridge(_addr address) returns()
+// Solidity: function setBridge(address _addr) returns()
 func (_Home *HomeSession) SetBridge(_addr common.Address) (*types.Transaction, error) {
 	return _Home.Contract.SetBridge(&_Home.TransactOpts, _addr)
 }
 
 // SetBridge is a paid mutator transaction binding the contract method 0x8dd14802.
 //
-// Solidity: function setBridge(_addr address) returns()
+// Solidity: function setBridge(address _addr) returns()
 func (_Home *HomeTransactorSession) SetBridge(_addr common.Address) (*types.Transaction, error) {
 	return _Home.Contract.SetBridge(&_Home.TransactOpts, _addr)
 }
 
 // Withdraw is a paid mutator transaction binding the contract method 0x4250a6f3.
 //
-// Solidity: function withdraw(_recipient address, _value uint256, _fromChain uint256, _txHash bytes32) returns()
+// Solidity: function withdraw(address _recipient, uint256 _value, uint256 _fromChain, bytes32 _txHash) returns()
 func (_Home *HomeTransactor) Withdraw(opts *bind.TransactOpts, _recipient common.Address, _value *big.Int, _fromChain *big.Int, _txHash [32]byte) (*types.Transaction, error) {
 	return _Home.contract.Transact(opts, "withdraw", _recipient, _value, _fromChain, _txHash)
 }
 
 // Withdraw is a paid mutator transaction binding the contract method 0x4250a6f3.
 //
-// Solidity: function withdraw(_recipient address, _value uint256, _fromChain uint256, _txHash bytes32) returns()
+// Solidity: function withdraw(address _recipient, uint256 _value, uint256 _fromChain, bytes32 _txHash) returns()
 func (_Home *HomeSession) Withdraw(_recipient common.Address, _value *big.Int, _fromChain *big.Int, _txHash [32]byte) (*types.Transaction, error) {
 	return _Home.Contract.Withdraw(&_Home.TransactOpts, _recipient, _value, _fromChain, _txHash)
 }
 
 // Withdraw is a paid mutator transaction binding the contract method 0x4250a6f3.
 //
-// Solidity: function withdraw(_recipient address, _value uint256, _fromChain uint256, _txHash bytes32) returns()
+// Solidity: function withdraw(address _recipient, uint256 _value, uint256 _fromChain, bytes32 _txHash) returns()
 func (_Home *HomeTransactorSession) Withdraw(_recipient common.Address, _value *big.Int, _fromChain *big.Int, _txHash [32]byte) (*types.Transaction, error) {
 	return _Home.Contract.Withdraw(&_Home.TransactOpts, _recipient, _value, _fromChain, _txHash)
 }
@@ -341,7 +341,7 @@ type HomeBridgeFunded struct {
 
 // FilterBridgeFunded is a free log retrieval operation binding the contract event 0xc2520f24142cb24b12b04df358be485159ec7ec1a3c3ad25fa65e1a226e4eec3.
 //
-// Solidity: e BridgeFunded(_addr address)
+// Solidity: event BridgeFunded(address _addr)
 func (_Home *HomeFilterer) FilterBridgeFunded(opts *bind.FilterOpts) (*HomeBridgeFundedIterator, error) {
 
 	logs, sub, err := _Home.contract.FilterLogs(opts, "BridgeFunded")
@@ -353,7 +353,7 @@ func (_Home *HomeFilterer) FilterBridgeFunded(opts *bind.FilterOpts) (*HomeBridg
 
 // WatchBridgeFunded is a free log subscription operation binding the contract event 0xc2520f24142cb24b12b04df358be485159ec7ec1a3c3ad25fa65e1a226e4eec3.
 //
-// Solidity: e BridgeFunded(_addr address)
+// Solidity: event BridgeFunded(address _addr)
 func (_Home *HomeFilterer) WatchBridgeFunded(opts *bind.WatchOpts, sink chan<- *HomeBridgeFunded) (event.Subscription, error) {
 
 	logs, sub, err := _Home.contract.WatchLogs(opts, "BridgeFunded")
@@ -463,7 +463,7 @@ type HomeBridgeSet struct {
 
 // FilterBridgeSet is a free log retrieval operation binding the contract event 0xa49730bff544fd0b716395c592e39c6fd2d2481a19b9229b5b240483db95a495.
 //
-// Solidity: e BridgeSet(_addr address)
+// Solidity: event BridgeSet(address _addr)
 func (_Home *HomeFilterer) FilterBridgeSet(opts *bind.FilterOpts) (*HomeBridgeSetIterator, error) {
 
 	logs, sub, err := _Home.contract.FilterLogs(opts, "BridgeSet")
@@ -475,7 +475,7 @@ func (_Home *HomeFilterer) FilterBridgeSet(opts *bind.FilterOpts) (*HomeBridgeSe
 
 // WatchBridgeSet is a free log subscription operation binding the contract event 0xa49730bff544fd0b716395c592e39c6fd2d2481a19b9229b5b240483db95a495.
 //
-// Solidity: e BridgeSet(_addr address)
+// Solidity: event BridgeSet(address _addr)
 func (_Home *HomeFilterer) WatchBridgeSet(opts *bind.WatchOpts, sink chan<- *HomeBridgeSet) (event.Subscription, error) {
 
 	logs, sub, err := _Home.contract.WatchLogs(opts, "BridgeSet")
@@ -585,7 +585,7 @@ type HomeContractCreation struct {
 
 // FilterContractCreation is a free log retrieval operation binding the contract event 0x4db17dd5e4732fb6da34a148104a592783ca119a1e7bb8829eba6cbadef0b511.
 //
-// Solidity: e ContractCreation(_owner address)
+// Solidity: event ContractCreation(address _owner)
 func (_Home *HomeFilterer) FilterContractCreation(opts *bind.FilterOpts) (*HomeContractCreationIterator, error) {
 
 	logs, sub, err := _Home.contract.FilterLogs(opts, "ContractCreation")
@@ -597,7 +597,7 @@ func (_Home *HomeFilterer) FilterContractCreation(opts *bind.FilterOpts) (*HomeC
 
 // WatchContractCreation is a free log subscription operation binding the contract event 0x4db17dd5e4732fb6da34a148104a592783ca119a1e7bb8829eba6cbadef0b511.
 //
-// Solidity: e ContractCreation(_owner address)
+// Solidity: event ContractCreation(address _owner)
 func (_Home *HomeFilterer) WatchContractCreation(opts *bind.WatchOpts, sink chan<- *HomeContractCreation) (event.Subscription, error) {
 
 	logs, sub, err := _Home.contract.WatchLogs(opts, "ContractCreation")
@@ -710,7 +710,7 @@ type HomeWithdraw struct {
 
 // FilterWithdraw is a free log retrieval operation binding the contract event 0x80bd7e915c065f64ef8e41fa6334d4a2b752591cb4d462c204b8e2449eb0a1f7.
 //
-// Solidity: e Withdraw(_recipient address, _value uint256, _fromChain uint256, _txHash bytes32)
+// Solidity: event Withdraw(address _recipient, uint256 _value, uint256 _fromChain, bytes32 _txHash)
 func (_Home *HomeFilterer) FilterWithdraw(opts *bind.FilterOpts) (*HomeWithdrawIterator, error) {
 
 	logs, sub, err := _Home.contract.FilterLogs(opts, "Withdraw")
@@ -722,7 +722,7 @@ func (_Home *HomeFilterer) FilterWithdraw(opts *bind.FilterOpts) (*HomeWithdrawI
 
 // WatchWithdraw is a free log subscription operation binding the contract event 0x80bd7e915c065f64ef8e41fa6334d4a2b752591cb4d462c204b8e2449eb0a1f7.
 //
-// Solidity: e Withdraw(_recipient address, _value uint256, _fromChain uint256, _txHash bytes32)
+// Solidity: event Withdraw(address _recipient, uint256 _value, uint256 _fromChain, bytes32 _txHash)
 func (_Home *HomeFilterer) WatchWithdraw(opts *bind.WatchOpts, sink chan<- *HomeWithdraw) (event.Subscription, error) {
 
 	logs, sub, err := _Home.contract.WatchLogs(opts, "Withdraw")
