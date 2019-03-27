@@ -405,9 +405,38 @@ func main() {
 		/* listener */
 		logger.Info("listening for events...")
 		for _, chain := range clients {
-			go client.Listen(chain, clients, events, doneClient, ks, flags, wg)
+			chains := removeChain(clients, chain)
+			go client.Listen(chain, chains, events, doneClient, ks, flags, wg)
 		}
 
 		<-doneClient
 	}
 }
+
+func removeChain(array []*client.Chain, item *client.Chain) []*client.Chain {
+	for i, v := range array {
+		fmt.Println("outside", v.Name)
+		fmt.Println("outside", item.Name)
+		if v.Name == item.Name {
+			fmt.Println("inside", array[i].Name)
+			array[i] = array[len(array)-1]
+			return array[:len(array)-1]
+		}
+	}
+	return array
+}
+
+// We should do this
+//package main
+//
+//type Connection struct {
+//	Id uint16
+//	X string
+//}
+//
+//var connections map[uint16]Connection
+//
+//func main() {
+//	connections = make(map[uint16]Connection)
+//	connections[1] = Connection{}
+//}
