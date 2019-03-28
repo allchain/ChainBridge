@@ -415,8 +415,6 @@ func main() {
 
 func removeChain(array []*client.Chain, item *client.Chain) []*client.Chain {
 	for i, v := range array {
-		fmt.Println("outside", v.Name)
-		fmt.Println("outside", item.Name)
 		if v.Name == item.Name {
 			fmt.Println("inside", array[i].Name)
 			array[i] = array[len(array)-1]
