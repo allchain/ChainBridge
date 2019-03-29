@@ -10,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/ChainSafeSystems/ChainBridge/logger"
+	"github.com/ChainSafe/ChainBridge/logger"
 )
 
 // generate the 4-byte identifier from a function signature

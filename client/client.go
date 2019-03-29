@@ -20,7 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 
-	"github.com/ChainSafeSystems/ChainBridge/logger"
+	"github.com/ChainSafe/ChainBridge/logger"
 )
 
 /* global variables */
