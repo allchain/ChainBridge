@@ -15,7 +15,7 @@ solc/solcjs
 `npm i -g solc`
 
 # to get the bridge
-`go get github.com/ChainSafeSystems/ChainBridge`
+`go get github.com/ChainSafe/ChainBridge`
 
 # compile abi
 ```
@@ -27,7 +27,7 @@ solcjs --abi contracts/Bridge.sol -o build
 # to run
 #### generic instructions for bridge, needs to be updated!
 ```
-cd $GOPATH/src/github.com/ChainSafeSystems/ChainBridge
+cd $GOPATH/src/github.com/ChainSafe/ChainBridge
 go build && go install
 ```
 

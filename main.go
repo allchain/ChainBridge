@@ -18,8 +18,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	"github.com/ChainSafeSystems/ChainBridge/client"
-	"github.com/ChainSafeSystems/ChainBridge/logger"
+	"github.com/ChainSafe/ChainBridge/client"
+	"github.com/ChainSafe/ChainBridge/logger"
 )
 
 /* global vars */
